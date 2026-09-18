@@ -1,0 +1,72 @@
+server:
+  # Porta HTTP do API Gateway
+  port: 8081
+
+  compression:
+    # Habilita compressão HTTP (gzip),
+    # reduzindo tráfego de rede nas respostas
+    enabled: true
+
+  # Faz o Spring interpretar corretamente headers
+  # encaminhados por proxies reversos como:
+  # Nginx, Traefik, Kubernetes Ingress, etc.
+  #
+  # Importante para:
+  # - HTTPS correto
+  # - IP real do cliente
+  # - Host original da requisição
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    # Nome da aplicação registrado no Eureka
+    name: database-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_URL:localhost}:${DB_PORT:5432}/${DB_NAME:houpper}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:develop}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        '[format_sql]': true
+        '[show_sql]': true
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    default-schema: management
+    schemas:
+      - management
+    locations:
+      - classpath:db/migration/management
+    baseline-on-migrate: true
+
+eureka:
+  instance:
+    # Faz o Eureka preferir IP ao invés de hostname
+    # nas comunicações entre serviços
+    prefer-ip-address: true
+
+    # Identificador único da instância no Eureka
+    #
+    # Exemplo:
+    # gateway:192.168.0.15:8080
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+
+  client:
+    # Registra o Gateway no Eureka Server
+    register-with-eureka: true
+
+    # Permite buscar serviços registrados
+    # no Eureka para roteamento automático
+    fetch-registry: true
+
+    service-url:
+      # URL do Eureka Server.
+      # Pode ser sobrescrita pela variável EUREKA_URL
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}

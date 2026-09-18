@@ -1,0 +1,40 @@
+tasks.register("docker-build", Exec) {
+
+    dependsOn bootJar
+
+    doFirst {
+
+        def env = project.findProperty("env")?.toString()?.trim()
+        def version = project.version
+
+        def allowedEnvs = ["dev", "test", "homolog", "prod"]
+
+        if (!env) {
+            throw new GradleException("""
+				Parametro obrigatorio nao informado: -Penv
+
+				Valores permitidos:
+				${allowedEnvs.join(', ')}
+
+				Exemplo:
+				  ./gradlew dockerBuild -Penv=dev
+			""")
+        }
+
+        if (!allowedEnvs.contains(env)) {
+            throw new GradleException("""
+				Valor invalido para -Penv: '${env}'
+
+				Valores permitidos:
+				${allowedEnvs.join(', ')}
+			""")
+        }
+
+        def tags = [
+                "-t", "database-service:${version}",
+                "-t", "database-service:${env}"
+        ]
+
+        commandLine(["docker", "build"] + tags + ["."])
+    }
+}
