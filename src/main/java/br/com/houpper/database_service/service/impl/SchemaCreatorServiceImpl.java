@@ -1,5 +1,6 @@
 package br.com.houpper.database_service.service.impl;
 
+import br.com.houpper.common.exception.exceptions.BadRequestException;
 import br.com.houpper.database_service.service.SchemaCreatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,35 +66,19 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
     private void validateSchemaName(String schemaName) {
 
         if (StringUtils.isBlank(schemaName)) {
-            /*
-             * Aqui vou lançar as exceptions que ainda serão desenvolvidas na lib.
-             * Throw new BadRequestException("Schema name must not be empty.");
-             */
-            return;
+            throw new BadRequestException("Schema name must not be empty.");
         }
 
         if (!SCHEMA_PATTERN.matcher(schemaName).matches()) {
-            /*
-             * Aqui vou lançar as exceptions que ainda serão desenvolvidas na lib.
-             * Throw new BadRequestException("Invalid schema name.");
-             */
-            return;
+            throw new BadRequestException("Invalid schema name.");
         }
 
         if (RESERVED_SCHEMAS.contains(schemaName)) {
-            /*
-             * Aqui vou lançar as exceptions que ainda serão desenvolvidas na lib.
-             * Throw new BadRequestException("Reserved schema name.");
-             */
-            return;
+            throw new BadRequestException("Reserved schema name.");
         }
 
         if (schemaExists(schemaName)) {
-            /*
-             * Aqui vou lançar as exceptions que ainda serão desenvolvidas na lib.
-             * Throw new BadRequestException("Schema '" + schemaName + "' already exists.");
-             */
-            return;
+            throw new BadRequestException("Schema '" + schemaName + "' already exists.");
         }
     }
 
