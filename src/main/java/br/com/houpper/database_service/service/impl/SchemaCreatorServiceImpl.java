@@ -86,6 +86,7 @@ public class SchemaCreatorServiceImpl implements SchemaCreatorService {
      * Verifica se o schema já existe no banco de dados.
      *
      * @param schemaName nome do schema a ser verificado.
+     *
      * @return {@code true} se existir ou {@code false} caso contrário.
      */
     private boolean schemaExists(String schemaName) {

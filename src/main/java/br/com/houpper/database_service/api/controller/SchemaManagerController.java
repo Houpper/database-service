@@ -27,23 +27,33 @@ public class SchemaManagerController {
      * Cria o schema do tenant e inicia o provisionamento do ambiente.
      *
      * @param request Dados utilizados para identificar o tenant e seu schema.
+     *
      * @return Resposta indicando que a solicitação de provisionamento foi aceita.
      */
     @PostMapping("/create")
     public ResponseEntity<OperationResponseDTO> createSchema(@RequestBody SchemaManagerDTO request) {
+
         this.schemaManagerService.createSchemaAndProvisionEnvironment(request);
-        return ResponseEntity.accepted().body(new OperationResponseDTO("Solicitação de provisionamento aceita."));
+
+        return ResponseEntity.accepted().body(
+                new OperationResponseDTO("Solicitação de provisionamento aceita.")
+        );
     }
 
     /**
      * Inicia a migração do schema do tenant.
      *
      * @param request Dados utilizados para identificar o tenant e seu schema.
+     *
      * @return Resposta indicando que a solicitação de migração foi aceita.
      */
     @PostMapping("/migrate")
     public ResponseEntity<OperationResponseDTO> migrateSchema(@RequestBody SchemaManagerDTO request) {
+
         this.schemaManagerService.migrateSchema(request);
-        return ResponseEntity.accepted().body(new OperationResponseDTO("Solicitação de migração aceita."));
+
+        return ResponseEntity.accepted().body(
+                new OperationResponseDTO("Solicitação de migração aceita.")
+        );
     }
 }
