@@ -12,5 +12,4 @@ public record SchemaMigrationEvent(
 
         UUID TenantID,
         String schemaName
-) {
-}
+) {}
