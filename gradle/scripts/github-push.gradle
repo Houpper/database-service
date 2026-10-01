@@ -1,0 +1,83 @@
+tasks.register("github-push", Exec) {
+
+    def env = project.findProperty("env")?.toString()?.trim()
+    def version = project.version.toString()
+    def imageName = project.name
+
+    def allowedEnvs = ["dev", "test", "homolog", "prod"]
+
+    if (!env) {
+        throw new GradleException("""
+            Parametro obrigatorio nao informado: -Penv
+
+            Valores permitidos:
+            ${allowedEnvs.join(', ')}
+
+            Exemplo:
+              ./gradlew github-push -Penv=dev
+        """)
+    }
+
+    if (!allowedEnvs.contains(env)) {
+        throw new GradleException("""
+            Valor invalido para -Penv: '${env}'
+
+            Valores permitidos:
+            ${allowedEnvs.join(', ')}
+        """)
+    }
+
+    def githubImage = "ghcr.io/houpper/${imageName}"
+
+    def localVersionImage = "${imageName}:${version}"
+    def localEnvImage = "${imageName}:${env}"
+
+    def githubVersionImage = "${githubImage}:${version}"
+    def githubEnvImage = "${githubImage}:${env}"
+
+    doFirst {
+
+        println ""
+        println "=============================================="
+        println " GitHub Container Registry"
+        println "=============================================="
+        println " Serviço:       ${imageName}"
+        println " Versão:        ${version}"
+        println " Ambiente:      ${env}"
+        println ""
+        println " Imagens locais:"
+        println "   ${localVersionImage}"
+        println "   ${localEnvImage}"
+        println ""
+        println " Imagens GitHub:"
+        println "   ${githubVersionImage}"
+        println "   ${githubEnvImage}"
+        println "=============================================="
+        println ""
+
+        commandLine(
+                "sh",
+                "-c",
+                """
+                set -e
+
+                echo "Criando tag ${githubVersionImage}"
+                docker tag ${localVersionImage} ${githubVersionImage}
+
+                echo "Criando tag ${githubEnvImage}"
+                docker tag ${localEnvImage} ${githubEnvImage}
+
+                echo "Publicando ${githubVersionImage}"
+                docker push ${githubVersionImage}
+
+                echo "Publicando ${githubEnvImage}"
+                docker push ${githubEnvImage}
+
+                echo ""
+                echo "=============================================="
+                echo " Publicação concluída"
+                echo "=============================================="
+                """
+        )
+    }
+}

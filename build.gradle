@@ -82,3 +82,5 @@ bootJar {
 apply from: "gradle/scripts/common.gradle"
 
 apply from: "gradle/scripts/docker-build.gradle"
+
+apply from: "gradle/scripts/github-push.gradle"
